@@ -1,0 +1,344 @@
+[
+{
+  "model": "cards.label",
+  "pk": 8,
+  "fields": {
+    "name": "criminologie",
+    "color": "#f6a53b",
+    "created_at": "2026-01-01T22:20:19.163Z"
+  }
+},
+{
+  "model": "cards.label",
+  "pk": 9,
+  "fields": {
+    "name": "naam",
+    "color": "#3b5df6",
+    "created_at": "2026-01-02T16:52:34.684Z"
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 5,
+  "fields": {
+    "title": "Robert Agnew",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "algemeene strain theorie 1992"
+    ],
+    "keywords": [
+      "algemeene strain theorie"
+    ],
+    "created_at": "2026-01-01T21:14:07.416Z",
+    "updated_at": "2026-01-02T16:57:53.899Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 6,
+  "fields": {
+    "title": "Ferri",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "onderdeel biosociaale school",
+      "pleite voor invoering van reeks strafvergangende maatregelen van sociaal profylactische aard gericht op bescherming van de maatschapij",
+      "19-20 ste eeuw"
+    ],
+    "keywords": [
+      "biosociaale school",
+      "strafvergangende maatregelen",
+      "19-20"
+    ],
+    "created_at": "2026-01-02T16:50:32.460Z",
+    "updated_at": "2026-01-02T16:52:46.765Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 7,
+  "fields": {
+    "title": "Manouvrier",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "19-20ste eeuw",
+      "onderdeel franse milieuschool"
+    ],
+    "keywords": [
+      "19-20",
+      "franse milieuschool"
+    ],
+    "created_at": "2026-01-02T16:52:08.079Z",
+    "updated_at": "2026-01-02T16:52:51.541Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 8,
+  "fields": {
+    "title": "Phillippe Lacroix",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "\"ik was gangster\"",
+      "participerende observatie"
+    ],
+    "keywords": [
+      "participerende observatie",
+      "ik was gangster"
+    ],
+    "created_at": "2026-01-02T16:54:04.514Z",
+    "updated_at": "2026-01-02T16:54:04.514Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 9,
+  "fields": {
+    "title": "Keith Hayward",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "grondleger driehoeksstructuur culturele criminologie (subject/dader, object/omgeving, culturele betekenisgeving/media)"
+    ],
+    "keywords": [
+      "driehoeksstructuur",
+      "subject/dader",
+      "object/omgeving",
+      "culturele betekenisgeving/media"
+    ],
+    "created_at": "2026-01-02T16:56:15.832Z",
+    "updated_at": "2026-01-02T16:56:22.740Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 10,
+  "fields": {
+    "title": "Lode Walgrave",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "restorative justice (herstelrecht) 2000"
+    ],
+    "keywords": [
+      "herstelrecht"
+    ],
+    "created_at": "2026-01-02T16:57:29.456Z",
+    "updated_at": "2026-01-02T16:57:29.456Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 11,
+  "fields": {
+    "title": "Herman Bianchi",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "abolitionistische visie op strafrecht",
+      "moderne strafrecht te dadergericht",
+      "criminaliteit moet opnieuw gezien worden als conflict dader-slachtoffer"
+    ],
+    "keywords": [
+      "abolitionistische visie",
+      "strafrecht te dadergericht",
+      "conflict dader-slachtoffer"
+    ],
+    "created_at": "2026-01-02T17:00:31.006Z",
+    "updated_at": "2026-01-02T17:00:31.006Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 12,
+  "fields": {
+    "title": "Guido Cuyvers",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "primaire victimisatie (eerste keer slachtofer, directe schade)",
+      "secundaire victimisatie (manier waarop instanties omgaan met slachtoffers, label)"
+    ],
+    "keywords": [
+      "primaire victimisatie",
+      "secundaire victimisatie"
+    ],
+    "created_at": "2026-01-02T17:01:52.647Z",
+    "updated_at": "2026-01-02T17:01:52.647Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 13,
+  "fields": {
+    "title": "Séverin-Carlos Versele",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "born victim",
+      "door sociaale en psychologische procesen herhaaldelijk slachtoffer 1975"
+    ],
+    "keywords": [
+      "born victim",
+      "sociaale en psychologische procesen herhaaldelijk slachtoffer"
+    ],
+    "created_at": "2026-01-02T17:03:13.442Z",
+    "updated_at": "2026-01-02T17:03:13.442Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 14,
+  "fields": {
+    "title": "Marvin Wolfgang",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "26% moordzaken slachtoffer conflict gestart = victim precipitation"
+    ],
+    "keywords": [
+      "victim precipitation"
+    ],
+    "created_at": "2026-01-02T17:05:11.220Z",
+    "updated_at": "2026-01-02T17:05:11.220Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 15,
+  "fields": {
+    "title": "Benjamin Mendelsohn",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "introductie term victimologie 1956",
+      "typologien volstrekt onschuldig tot volstrekt schuldig slachtoffer als gradaties van verantwoordelijkheid en causaliteit = victim blaming"
+    ],
+    "keywords": [
+      "introductie term victimologie",
+      "typologien slachtoffer",
+      "victim blaming"
+    ],
+    "created_at": "2026-01-02T17:06:56.735Z",
+    "updated_at": "2026-01-02T17:06:56.735Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 16,
+  "fields": {
+    "title": "Hans Von Hentig",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "\"the criminal and his victim\" 1948"
+    ],
+    "keywords": [
+      "the criminal and his victim"
+    ],
+    "created_at": "2026-01-02T17:07:32.604Z",
+    "updated_at": "2026-01-02T17:07:32.604Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 17,
+  "fields": {
+    "title": "Stephyn Lyng",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "edgework",
+      "adrenaline kick bij living on the edge"
+    ],
+    "keywords": [
+      "edgework",
+      "adrenaline kick"
+    ],
+    "created_at": "2026-01-02T17:08:17.831Z",
+    "updated_at": "2026-01-02T17:08:17.831Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 18,
+  "fields": {
+    "title": "Jack Katz",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "\"seductions of crime\" 1988"
+    ],
+    "keywords": [
+      "seductions of crime"
+    ],
+    "created_at": "2026-01-02T17:08:57.528Z",
+    "updated_at": "2026-01-02T17:08:57.528Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "cards.card",
+  "pk": 19,
+  "fields": {
+    "title": "George Kelling",
+    "icon": "pi pi-star",
+    "quick_facts": [
+      "broken windows benadering 1982"
+    ],
+    "keywords": [
+      "broken windows benadering"
+    ],
+    "created_at": "2026-01-02T17:09:32.246Z",
+    "updated_at": "2026-01-02T17:09:32.246Z",
+    "labels": [
+      8,
+      9
+    ]
+  }
+}
+]
