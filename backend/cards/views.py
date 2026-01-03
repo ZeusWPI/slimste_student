@@ -4,14 +4,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 from django.contrib.auth.models import User
-from .models import Card, Label
-from .serializers import CardSerializer, LabelSerializer
+from .models import Card, Label, QuizResult
+from .serializers import CardSerializer, LabelSerializer, QuizResultSerializer
 
 
 class LabelViewSet(viewsets.ModelViewSet):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_queryset(self):
         # Return labels owned by user or shared with user
@@ -63,6 +64,7 @@ class CardViewSet(viewsets.ModelViewSet):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_queryset(self):
         # Return cards:
@@ -139,3 +141,24 @@ def search_users(request):
     users = users.order_by('username')[:5]
     
     return Response([{'username': user.username} for user in users])
+
+
+class QuizResultViewSet(viewsets.ModelViewSet):
+    queryset = QuizResult.objects.all()
+    serializer_class = QuizResultSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Return only quiz results for the current user
+        return QuizResult.objects.filter(user=self.request.user).order_by('-completed_at')
+
+    def list(self, request, *args, **kwargs):
+        # Check if 'all' parameter is set to bypass pagination
+        if request.query_params.get('all') == 'true':
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        return super().list(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

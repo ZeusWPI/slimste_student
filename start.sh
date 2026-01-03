@@ -21,11 +21,11 @@ echo "=== Starting services ==="
 
 if [ "$CLEAN_BUILD" = true ]; then
   echo "Performing clean build..."
-  docker-compose build --no-cache
-  docker-compose up --force-recreate
+  docker compose build --no-cache
+  docker compose up --force-recreate
 else
   echo "Starting existing containers..."
-  docker-compose up -d
+  docker compose up -d
 fi
 
 # Run migrations if requested

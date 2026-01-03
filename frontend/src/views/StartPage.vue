@@ -15,6 +15,10 @@ const goToQuiz = () => {
   router.push('/quiz')
 }
 
+const goToQuizHistory = () => {
+  router.push('/quiz/history')
+}
+
 const handleLogout = async () => {
   await logout()
   router.push('/login')
@@ -48,7 +52,10 @@ const handleLogout = async () => {
           <p>Test your knowledge! Select labels and answer questions to beat the clock.</p>
         </template>
         <template #footer>
-          <Button label="Start Quiz" icon="pi pi-play" @click="goToQuiz" />
+          <div class="card-footer-actions">
+            <Button label="Start Quiz" icon="pi pi-play" @click="goToQuiz" />
+            <Button label="View History" icon="pi pi-history" outlined @click="goToQuizHistory" />
+          </div>
         </template>
       </Card>
     </div>
@@ -97,6 +104,12 @@ h1 {
   gap: 1.5rem;
   max-width: 800px;
   margin: 0 auto;
+}
+
+.card-footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .welcome-card {

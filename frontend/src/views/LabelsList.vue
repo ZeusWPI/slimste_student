@@ -79,15 +79,21 @@ const deleteLabel = async (id: number) => {
       <Card v-for="label in labels" :key="label.id" class="label-item">
         <template #content>
           <div class="label-content">
-            <Chip 
-              :label="label.name" 
-              :style="{ 
-                backgroundColor: label.color, 
-                color: '#fff',
-                fontSize: '1rem',
-                padding: '0.5rem 1rem'
-              }" 
-            />
+            <div class="label-info">
+              <Chip 
+                :label="label.name" 
+                :style="{ 
+                  backgroundColor: label.color, 
+                  color: '#fff',
+                  fontSize: '1rem',
+                  padding: '0.5rem 1rem'
+                }"
+              />
+              <span class="card-count">
+                <i class="pi pi-bookmark"></i>
+                {{ label.card_count || 0 }} card{{ (label.card_count || 0) !== 1 ? 's' : '' }}
+              </span>
+            </div>
             <Button 
               icon="pi pi-trash" 
               severity="danger" 
@@ -150,5 +156,24 @@ h1 {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem;
+}
+
+.label-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.card-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.card-count i {
+  font-size: 0.85rem;
 }
 </style>

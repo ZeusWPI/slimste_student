@@ -181,11 +181,32 @@ const stopTimer = () => {
   }
 }
 
-const endQuiz = () => {
+const endQuiz = async () => {
   stopTimer()
   finalTime.value = timeRemaining.value
   quizEnded.value = true
   quizStarted.value = false
+  
+  // Save quiz result
+  try {
+    await fetch('/api/quiz-results/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        label_ids: selectedLabels.value.map(l => l.id),
+        total_questions: totalQuestions.value,
+        correct_answers: correctAnswers.value,
+        wrong_answers: wrongAnswers.value,
+        time_remaining: finalTime.value,
+        is_untimed: isUntimed.value
+      }),
+    })
+  } catch (error) {
+    console.error('Error saving quiz result:', error)
+  }
 }
 
 const handleCorrect = () => {

@@ -7,6 +7,7 @@ export interface Label {
   owner_username?: string
   shared_with_usernames?: string[]
   is_owner?: boolean
+  card_count?: number
 }
 
 export interface Card {

@@ -128,14 +128,14 @@ STATIC_URL = 'static/'
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://slimstestudent.zeus.gent/"
+    "https://slimstestudent.zeus.gent"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
-    "https://slimstestudent.zeus.gent/"
+    "https://slimstestudent.zeus.gent"
 ]
 
 # Session settings
@@ -162,6 +162,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 # Default primary key field type

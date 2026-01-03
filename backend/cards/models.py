@@ -33,3 +33,19 @@ class Card(models.Model):
     def __str__(self):
         return f"{self.title} ({self.owner.username})"
 
+
+class QuizResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_results')
+    labels = models.ManyToManyField(Label, related_name='quiz_results', blank=True)
+    total_questions = models.IntegerField()
+    correct_answers = models.IntegerField()
+    wrong_answers = models.IntegerField()
+    time_remaining = models.IntegerField(default=0)  # seconds
+    is_untimed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-completed_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.correct_answers}/{self.total_questions} ({self.completed_at})"
