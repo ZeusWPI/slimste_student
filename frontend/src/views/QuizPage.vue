@@ -16,8 +16,14 @@ const selectedLabels = ref<Label[]>([])
 const includeUnlabeled = ref(false)
 const showLabelsInQuiz = ref(true)
 const isUntimed = ref(false)
+const quizMode = ref<'one-per-card' | 'specific-amount'>('one-per-card')
+const questionCount = ref(10)
 const cards = ref<CardData[]>([])
+const allCards = ref<CardData[]>([])
+const usedCardIndices = ref<number[]>([])
 const currentCardIndex = ref(0)
+const totalQuestions = ref(0)
+const currentQuestionNumber = ref(0)
 const timeRemaining = ref(60)
 const showAnswer = ref(false)
 const quizStarted = ref(false)
@@ -31,9 +37,34 @@ const currentQuestionType = ref<QuestionType>('title')
 
 const currentCard = computed(() => cards.value[currentCardIndex.value])
 const progress = computed(() => {
-  if (cards.value.length === 0) return 0
-  return ((currentCardIndex.value + 1) / cards.value.length) * 100
+  if (quizMode.value === 'specific-amount') {
+    if (totalQuestions.value === 0) return 0
+    return (currentQuestionNumber.value / totalQuestions.value) * 100
+  } else {
+    if (cards.value.length === 0) return 0
+    return ((currentCardIndex.value + 1) / cards.value.length) * 100
+  }
 })
+
+const getNextRandomCard = () => {
+  if (allCards.value.length === 0) return null
+  
+  // If we've used all cards, reset the used indices
+  if (usedCardIndices.value.length >= allCards.value.length) {
+    usedCardIndices.value = []
+  }
+  
+  // Get available card indices
+  const availableIndices = allCards.value
+    .map((_, index) => index)
+    .filter(index => !usedCardIndices.value.includes(index))
+  
+  // Pick a random available card
+  const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)]
+  usedCardIndices.value.push(randomIndex)
+  
+  return allCards.value[randomIndex]
+}
 
 const generateQuestion = () => {
   if (!currentCard.value) return
@@ -77,26 +108,46 @@ const startQuiz = async () => {
     
     const response = await fetch(url)
     if (response.ok) {
-      cards.value = await response.json()
+      const fetchedCards = await response.json()
       
-      console.log(`Loaded ${cards.value.length} cards for quiz`)
+      console.log(`Loaded ${fetchedCards.length} cards for quiz`)
       
-      if (cards.value.length === 0) {
+      if (fetchedCards.length === 0) {
         alert('No cards found for selected labels')
         return
       }
       
-      // Shuffle cards
-      cards.value.sort(() => Math.random() - 0.5)
-      
-      quizStarted.value = true
-      timeRemaining.value = 60
-      currentCardIndex.value = 0
-      showAnswer.value = false
+      // Reset state
       correctAnswers.value = 0
       wrongAnswers.value = 0
       quizEnded.value = false
       finalTime.value = 0
+      showAnswer.value = false
+      usedCardIndices.value = []
+      
+      if (quizMode.value === 'one-per-card') {
+        // Original mode: one question per card
+        cards.value = [...fetchedCards]
+        cards.value.sort(() => Math.random() - 0.5)
+        currentCardIndex.value = 0
+        totalQuestions.value = cards.value.length
+        currentQuestionNumber.value = 1
+      } else {
+        // Specific amount mode
+        allCards.value = [...fetchedCards]
+        totalQuestions.value = questionCount.value
+        currentQuestionNumber.value = 1
+        
+        // Generate first random card
+        const firstCard = getNextRandomCard()
+        if (firstCard) {
+          cards.value = [firstCard]
+          currentCardIndex.value = 0
+        }
+      }
+      
+      quizStarted.value = true
+      timeRemaining.value = 60
       
       generateQuestion()
       
@@ -144,11 +195,31 @@ const handleCorrect = () => {
   }
   showAnswer.value = false
   
-  if (currentCardIndex.value < cards.value.length - 1) {
-    currentCardIndex.value++
-    generateQuestion()
+  if (quizMode.value === 'specific-amount') {
+    currentQuestionNumber.value++
+    
+    if (currentQuestionNumber.value > totalQuestions.value) {
+      endQuiz()
+    } else {
+      // Get next random card
+      const nextCard = getNextRandomCard()
+      if (nextCard) {
+        cards.value = [nextCard]
+        currentCardIndex.value = 0
+        generateQuestion()
+      } else {
+        endQuiz()
+      }
+    }
   } else {
-    endQuiz()
+    // One per card mode
+    if (currentCardIndex.value < cards.value.length - 1) {
+      currentCardIndex.value++
+      currentQuestionNumber.value++
+      generateQuestion()
+    } else {
+      endQuiz()
+    }
   }
 }
 
@@ -160,11 +231,31 @@ const continueAfterWrong = () => {
   wrongAnswers.value++
   showAnswer.value = false
   
-  if (currentCardIndex.value < cards.value.length - 1) {
-    currentCardIndex.value++
-    generateQuestion()
+  if (quizMode.value === 'specific-amount') {
+    currentQuestionNumber.value++
+    
+    if (currentQuestionNumber.value > totalQuestions.value) {
+      endQuiz()
+    } else {
+      // Get next random card
+      const nextCard = getNextRandomCard()
+      if (nextCard) {
+        cards.value = [nextCard]
+        currentCardIndex.value = 0
+        generateQuestion()
+      } else {
+        endQuiz()
+      }
+    }
   } else {
-    endQuiz()
+    // One per card mode
+    if (currentCardIndex.value < cards.value.length - 1) {
+      currentCardIndex.value++
+      currentQuestionNumber.value++
+      generateQuestion()
+    } else {
+      endQuiz()
+    }
   }
 }
 
@@ -175,8 +266,14 @@ const restartQuiz = () => {
   includeUnlabeled.value = false
   showLabelsInQuiz.value = true
   isUntimed.value = false
+  quizMode.value = 'one-per-card'
+  questionCount.value = 10
   cards.value = []
+  allCards.value = []
+  usedCardIndices.value = []
   currentCardIndex.value = 0
+  totalQuestions.value = 0
+  currentQuestionNumber.value = 0
   timeRemaining.value = 60
   correctAnswers.value = 0
   wrongAnswers.value = 0
@@ -218,6 +315,7 @@ watch(() => quizStarted.value, (newVal) => {
               Include cards without labels
             </label>
           </div>
+          
           <div class="checkbox-field">
             <label>
               <input type="checkbox" v-model="showLabelsInQuiz" />
@@ -229,6 +327,32 @@ watch(() => quizStarted.value, (newVal) => {
               <input type="checkbox" v-model="isUntimed" />
               Untimed mode (no timer)
             </label>
+          </div>
+          <div class="quiz-mode-section">
+            <h3>Quiz Mode</h3>
+            <div class="radio-field">
+              <label>
+                <input type="radio" v-model="quizMode" value="one-per-card" />
+                One question per card
+              </label>
+            </div>
+            <div class="radio-field">
+              <label>
+                <input type="radio" v-model="quizMode" value="specific-amount" />
+                Specific number of questions
+              </label>
+            </div>
+            <div v-if="quizMode === 'specific-amount'" class="question-count-field">
+              <label for="questionCount">Number of questions:</label>
+              <input 
+                id="questionCount" 
+                type="number" 
+                v-model.number="questionCount" 
+                min="1" 
+                max="100"
+                class="question-count-input"
+              />
+            </div>
           </div>
           <Button 
             label="Start Quiz" 
@@ -268,8 +392,8 @@ watch(() => quizStarted.value, (newVal) => {
             :card="currentCard"
             :all-cards="cards"
             :question-type="currentQuestionType"
-            :question-number="currentCardIndex + 1"
-            :total-questions="cards.length"
+            :question-number="currentQuestionNumber"
+            :total-questions="totalQuestions"
             :show-labels="showLabelsInQuiz"
             :show-answer="showAnswer"
             @correct="handleCorrect"
@@ -298,7 +422,7 @@ watch(() => quizStarted.value, (newVal) => {
             </div>
             <div class="result-stat">
               <i class="pi pi-clock" style="color: #3B82F6; font-size: 3rem;"></i>
-              <h2>{{ cards.length }}</h2>
+              <h2>{{ totalQuestions }}</h2>
               <p>Total Questions</p>
             </div>
             <div v-if="finalTime > 0" class="result-stat">
@@ -360,6 +484,59 @@ h1 {
   cursor: pointer;
 }
 
+.quiz-mode-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--surface-50);
+  border-radius: 8px;
+}
+
+.quiz-mode-section h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.radio-field {
+  padding: 0.5rem 0;
+}
+
+.radio-field label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.radio-field input[type="radio"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+}
+
+.question-count-field {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.question-count-field label {
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+.question-count-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
 .start-button {
   margin-top: 1rem;
   width: 100%;
@@ -404,6 +581,7 @@ h1 {
 }
 
 .progress-bar {
+  position: relative;
   width: 100%;
   height: 8px;
   background: #e5e7eb;
@@ -416,6 +594,18 @@ h1 {
   height: 100%;
   background: var(--theme-primary);
   transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+  white-space: nowrap;
+  text-shadow: 0 0 2px white;
 }
 
 .question-card {
