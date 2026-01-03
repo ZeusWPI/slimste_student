@@ -78,8 +78,12 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mydatabase',         # matches POSTGRES_DB
+        'USER': 'myuser',             # matches POSTGRES_USER
+        'PASSWORD': 'mysecretpassword', # matches POSTGRES_PASSWORD
+        'HOST': 'db',                 # service name in docker-compose, NOT localhost
+        'PORT': '5432',
     }
 }
 

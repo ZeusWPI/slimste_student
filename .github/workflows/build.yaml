@@ -47,10 +47,10 @@ jobs:
             docker tag ghcr.io/tyboro2002/slimste_student_frontend:pr-${{ github.sha }} ghcr.io/tyboro2002/slimste_student_frontend:latest
           fi
 
-      - name: Push Docker image
+      - name: Push Backend Docker image
         if: github.event_name == 'push'
         run: docker push --all-tags ghcr.io/tyboro2002/slimste_student_backend
 
-      - name: Push Docker image
+      - name: Push Frontend Docker image
         if: github.event_name == 'push'
         run: docker push --all-tags ghcr.io/tyboro2002/slimste_student_frontend
