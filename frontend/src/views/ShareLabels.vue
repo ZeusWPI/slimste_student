@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
+import AutoComplete from 'primevue/autocomplete'
 import Chip from 'primevue/chip'
 import Message from 'primevue/message'
 import type { Label } from '../config/types'
@@ -12,6 +12,7 @@ import { fetchWithCsrf } from '../utils/csrf'
 const router = useRouter()
 const labels = ref<Label[]>([])
 const shareUsername = ref<{ [key: number]: string }>({})
+const suggestedUsers = ref<{ [key: number]: { username: string }[] }>({})
 const successMessage = ref('')
 const errorMessage = ref('')
 
@@ -22,14 +23,53 @@ const fetchLabels = async () => {
     })
     if (response.ok) {
       labels.value = await response.json()
+      // Initialize suggested users for each label
+      labels.value.forEach(async (label) => {
+        if (label.is_owner) {
+          await searchUsers(label.id, '')
+        }
+      })
     }
   } catch (error) {
     console.error('Error fetching labels:', error)
   }
 }
 
+const searchUsers = async (labelId: number, query: string) => {
+  try {
+    const response = await fetch(`/api/users/search/?q=${encodeURIComponent(query)}`, {
+      credentials: 'include'
+    })
+    if (response.ok) {
+      suggestedUsers.value[labelId] = await response.json()
+    }
+  } catch (error) {
+    console.error('Error searching users:', error)
+  }
+}
+
+const onUserSearch = (labelId: number, event: any) => {
+  const query = event.query !== undefined ? event.query : ''
+  searchUsers(labelId, query)
+}
+
+const onInputFocus = (labelId: number) => {
+  // Load top 5 users when focusing on input
+  if (!suggestedUsers.value[labelId] || suggestedUsers.value[labelId].length === 0) {
+    searchUsers(labelId, '')
+  }
+}
+
 const shareLabel = async (labelId: number) => {
-  const username = shareUsername.value[labelId]?.trim()
+  let username = shareUsername.value[labelId]
+  
+  // Handle if it's an object from autocomplete
+  if (typeof username === 'object' && username !== null) {
+    username = (username as any).username
+  }
+  
+  username = username?.trim()
+  
   if (!username) {
     errorMessage.value = 'Please enter a username'
     return
@@ -134,16 +174,22 @@ const goBack = () => {
             </div>
 
             <div class="share-input">
-              <InputText
+              <AutoComplete
                 v-model="shareUsername[label.id]"
+                :suggestions="suggestedUsers[label.id] || []"
+                @complete="onUserSearch(label.id, $event)"
+                @click="onInputFocus(label.id)"
+                optionLabel="username"
                 placeholder="Enter username to share with"
+                forceSelection
+                completeOnFocus
                 @keypress.enter="shareLabel(label.id)"
               />
               <Button 
                 label="Share" 
                 icon="pi pi-share-alt" 
                 @click="shareLabel(label.id)"
-                :disabled="!shareUsername[label.id]?.trim()"
+                :disabled="!shareUsername[label.id]"
               />
             </div>
           </div>
@@ -239,8 +285,12 @@ const goBack = () => {
   gap: 0.75rem;
 }
 
-.share-input input {
+.share-input :deep(.p-autocomplete) {
   flex: 1;
+}
+
+.share-input :deep(.p-autocomplete-input) {
+  width: 100%;
 }
 
 .shared-info {

@@ -1,8 +1,9 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
+from django.contrib.auth.models import User
 from .models import Card, Label
 from .serializers import CardSerializer, LabelSerializer
 
@@ -89,3 +90,20 @@ class CardViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def search_users(request):
+    """Search for users by username, excluding current user. Returns top 5 matches."""
+    query = request.query_params.get('q', '').strip()
+    
+    # Exclude current user from results
+    users = User.objects.exclude(id=request.user.id)
+    
+    if query:
+        users = users.filter(username__icontains=query)
+    
+    # Get top 5 users
+    users = users.order_by('username')[:5]
+    
+    return Response([{'username': user.username} for user in users])
