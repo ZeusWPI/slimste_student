@@ -65,9 +65,14 @@ class CardViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Return cards owned by user or cards with labels shared with user
+        # Return cards:
+        # 1. Owned by user
+        # 2. With labels shared with user
+        # 3. With labels owned by user (so we see cards others create with our labels)
         queryset = Card.objects.filter(
-            Q(owner=self.request.user) | Q(labels__shared_with=self.request.user)
+            Q(owner=self.request.user) | 
+            Q(labels__shared_with=self.request.user) |
+            Q(labels__owner=self.request.user)
         ).distinct().prefetch_related('labels')
         
         label_ids = self.request.query_params.get('labels', None)
@@ -89,6 +94,33 @@ class CardViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        card = self.get_object()
+        if card.owner != request.user:
+            return Response(
+                {'error': 'You can only edit cards you created'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        card = self.get_object()
+        if card.owner != request.user:
+            return Response(
+                {'error': 'You can only edit cards you created'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        card = self.get_object()
+        if card.owner != request.user:
+            return Response(
+                {'error': 'You can only delete cards you created'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().destroy(request, *args, **kwargs)
 
 
 @api_view(['GET'])

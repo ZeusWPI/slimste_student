@@ -154,8 +154,24 @@ const deleteCard = async (id: number) => {
         </template>
         <template #footer>
           <div class="card-actions">
-            <Button label="Edit" icon="pi pi-pencil" outlined @click="router.push(`/cards/${card.id}/edit`)" />
-            <Button label="Delete" icon="pi pi-trash" severity="danger" outlined @click="deleteCard(card.id)" />
+            <Button 
+              v-if="card.is_owner !== false" 
+              label="Edit" 
+              icon="pi pi-pencil" 
+              outlined 
+              @click="router.push(`/cards/${card.id}/edit`)"
+            />
+            <Button 
+              v-if="card.is_owner !== false" 
+              label="Delete" 
+              icon="pi pi-trash" 
+              severity="danger" 
+              outlined 
+              @click="deleteCard(card.id)"
+            />
+            <span v-if="card.is_owner === false" class="shared-badge">
+              <i class="pi pi-eye"></i> View Only (Shared by {{ card.owner_username }})
+            </span>
           </div>
         </template>
       </Card>
@@ -250,6 +266,16 @@ h1 {
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
+  align-items: center;
+}
+
+.shared-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-style: italic;
 }
 
 .card-section {

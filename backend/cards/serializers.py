@@ -35,11 +35,18 @@ class CardSerializer(serializers.ModelSerializer):
         required=False
     )
     owner_username = serializers.SerializerMethodField()
+    is_owner = serializers.SerializerMethodField()
 
     class Meta:
         model = Card
-        fields = ['id', 'title', 'icon', 'quick_facts', 'keywords', 'labels', 'label_ids', 'owner_username', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'owner_username', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'icon', 'quick_facts', 'keywords', 'labels', 'label_ids', 'owner_username', 'is_owner', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'owner_username', 'is_owner', 'created_at', 'updated_at']
 
     def get_owner_username(self, obj):
         return obj.owner.username if obj.owner else 'Unknown'
+
+    def get_is_owner(self, obj):
+        request = self.context.get('request')
+        if request and request.user:
+            return obj.owner == request.user
+        return False

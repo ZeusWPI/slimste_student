@@ -17,6 +17,7 @@ export interface Card {
   keywords: string[]
   labels: Label[]
   owner_username?: string
+  is_owner?: boolean
 }
 
 export interface Props {

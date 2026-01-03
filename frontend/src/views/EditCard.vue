@@ -16,6 +16,7 @@ const initialQuickFacts = ref<string[]>([])
 const initialKeywords = ref<string[]>([])
 const saving = ref(false)
 const loading = ref(true)
+const isOwner = ref(true)
 
 const fetchCard = async () => {
   const cardId = route.params.id
@@ -23,6 +24,15 @@ const fetchCard = async () => {
     const response = await fetch(`/api/cards/${cardId}/`)
     if (response.ok) {
       const card = await response.json()
+      
+      // Check if user is the owner
+      if (card.is_owner === false) {
+        alert('You can only edit cards you created')
+        router.push('/cards')
+        return
+      }
+      
+      isOwner.value = card.is_owner !== false
       initialTitle.value = card.title
       
       const matchedIcon = iconOptions.find(opt => opt.class === card.icon)
@@ -69,7 +79,8 @@ const updateCard = async (data: { title: string; icon: string; labelIds: number[
     if (response.ok) {
       router.push('/cards')
     } else {
-      alert('Failed to update card')
+      const error = await response.json()
+      alert(error.error || 'Failed to update card')
     }
   } catch (error) {
     console.error('Error updating card:', error)
