@@ -177,6 +177,31 @@ const openGraph = async () => {
   showGraph.value = true
 }
 
+const deleteQuizResult = async (resultId: number) => {
+  if (!confirm('Are you sure you want to delete this quiz result?')) {
+    return
+  }
+  
+  try {
+    const response = await fetch(`/api/quiz-results/${resultId}/`, {
+      method: 'DELETE',
+      credentials: 'include'
+    })
+    
+    if (response.ok) {
+      // Refresh the current page
+      await fetchQuizResults(currentPage.value)
+      // Clear cached all results so it will be refetched if graph is opened
+      allQuizResults.value = []
+    } else {
+      alert('Failed to delete quiz result')
+    }
+  } catch (error) {
+    console.error('Error deleting quiz result:', error)
+    alert('Error deleting quiz result')
+  }
+}
+
 const goToPage = (page: number) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
@@ -281,9 +306,20 @@ const goBack = () => {
               <i class="pi pi-calendar"></i>
               {{ formatDate(result.completed_at) }}
             </div>
-            <div class="result-score" :style="{ color: getScoreColor(getScorePercentage(result)) }">
-              <i class="pi pi-chart-bar"></i>
-              {{ getScorePercentage(result) }}%
+            <div class="header-actions">
+              <div class="result-score" :style="{ color: getScoreColor(getScorePercentage(result)) }">
+                <i class="pi pi-chart-bar"></i>
+                {{ getScorePercentage(result) }}%
+              </div>
+              <Button 
+                icon="pi pi-trash" 
+                @click="deleteQuizResult(result.id)"
+                severity="danger"
+                text
+                rounded
+                size="small"
+                class="delete-btn"
+              />
             </div>
           </div>
         </template>
@@ -457,6 +493,12 @@ h1 {
   gap: 1rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .result-date {
   display: flex;
   align-items: center;
@@ -472,6 +514,15 @@ h1 {
   gap: 0.5rem;
   font-size: 1.25rem;
   font-weight: bold;
+}
+
+.delete-btn {
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.delete-btn:hover {
+  opacity: 1;
 }
 
 .result-content {

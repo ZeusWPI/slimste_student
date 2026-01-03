@@ -61,6 +61,9 @@ const getNextRandomCard = () => {
   
   // Pick a random available card
   const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)]
+  
+  if (randomIndex === undefined) return null
+  
   usedCardIndices.value.push(randomIndex)
   
   return allCards.value[randomIndex]
