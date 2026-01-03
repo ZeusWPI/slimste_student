@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-5(7+)-6ls3#)46cy(1!@#(*87ct-js@x337)q9a&7z45s^%a0t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', 'slimstestudent.zeus.gent']
 
 
 # Application definition
@@ -128,12 +128,14 @@ STATIC_URL = 'static/'
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://slimstestudent.zeus.gent/"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
+    "https://slimstestudent.zeus.gent/"
 ]
 
 # Session settings
