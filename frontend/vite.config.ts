@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   server: {
+    allowedHosts: ['slimstestudent.zeus.gent'],
     proxy: {
       '/api': {
         target: 'http://backend:8000',
