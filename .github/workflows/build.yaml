@@ -35,22 +35,22 @@ jobs:
 
       - name: Build Backend Docker image
         run: |
-          docker build backend -t ghcr.io/tyboro2002/slimste_student_backend:pr-${{ github.sha }}
+          docker build backend -t ghcr.io/zeuswpi/slimste_student_backend:pr-${{ github.sha }}
           if [ "${{ github.event_name }}" == "push" ]; then
-            docker tag ghcr.io/tyboro2002/slimste_student_backend:pr-${{ github.sha }} ghcr.io/tyboro2002/slimste_student_backend:latest
+            docker tag ghcr.io/zeuswpi/slimste_student_backend:pr-${{ github.sha }} ghcr.io/zeuswpi/slimste_student_backend:latest
           fi
 
       - name: Build Frontend Docker image
         run: |
-          docker build frontend -t ghcr.io/tyboro2002/slimste_student_frontend:pr-${{ github.sha }}
+          docker build frontend -t ghcr.io/zeuswpi/slimste_student_frontend:pr-${{ github.sha }}
           if [ "${{ github.event_name }}" == "push" ]; then
-            docker tag ghcr.io/tyboro2002/slimste_student_frontend:pr-${{ github.sha }} ghcr.io/tyboro2002/slimste_student_frontend:latest
+            docker tag ghcr.io/zeuswpi/slimste_student_frontend:pr-${{ github.sha }} ghcr.io/zeuswpi/slimste_student_frontend:latest
           fi
 
       - name: Push Backend Docker image
         if: github.event_name == 'push'
-        run: docker push --all-tags ghcr.io/tyboro2002/slimste_student_backend
+        run: docker push --all-tags ghcr.io/zeuswpi/slimste_student_backend
 
       - name: Push Frontend Docker image
         if: github.event_name == 'push'
-        run: docker push --all-tags ghcr.io/tyboro2002/slimste_student_frontend
+        run: docker push --all-tags ghcr.io/zeuswpi/slimste_student_frontend
