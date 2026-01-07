@@ -246,7 +246,7 @@ const isRevealed = (keyword: string) => {
 }
 
 .blurred {
-  filter: blur(4px);
+  filter: blur(10px);
   user-select: none;
 }
 
