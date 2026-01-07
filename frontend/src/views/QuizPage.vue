@@ -6,7 +6,7 @@ import Button from 'primevue/button'
 import Chip from 'primevue/chip'
 import LabelSelector from '../components/LabelSelector.vue'
 import QuestionHandler from '../components/quiz_question_types/QuestionHandler.vue'
-import { selectRandomQuestionType, type QuestionType } from '../components/quiz_question_types/questionTypesConfig'
+import { selectRandomQuestionType, type QuestionType, questionTypes, getAvailableQuestionTypes } from '../components/quiz_question_types/questionTypesConfig'
 import type { Label, Card as CardData } from '../config/types'
 
 const router = useRouter()
@@ -18,6 +18,8 @@ const showLabelsInQuiz = ref(true)
 const isUntimed = ref(false)
 const quizMode = ref<'one-per-card' | 'specific-amount'>('one-per-card')
 const questionCount = ref(10)
+const selectedQuestionTypes = ref<QuestionType[]>(Object.keys(questionTypes) as QuestionType[])
+const allQuestionTypes = Object.keys(questionTypes) as QuestionType[]
 const cards = ref<CardData[]>([])
 const allCards = ref<CardData[]>([])
 const usedCardIndices = ref<number[]>([])
@@ -76,8 +78,18 @@ const generateQuestion = () => {
   showAnswer.value = false
   userAnswer.value = undefined
   
-  // Use the helper function from QuestionHandler to select a random question type
-  currentQuestionType.value = selectRandomQuestionType(currentCard.value)
+  // Get available question types for this card filtered by user selection
+  const availableTypes = getAvailableQuestionTypes(currentCard.value)
+    .filter(type => selectedQuestionTypes.value.includes(type))
+  
+  // Select a random question type from the available ones
+  if (availableTypes.length > 0) {
+    currentQuestionType.value = availableTypes[Math.floor(Math.random() * availableTypes.length)]!
+  } else {
+    // This shouldn't happen if validation is working, but fallback to first available
+    const allAvailable = getAvailableQuestionTypes(currentCard.value)
+    currentQuestionType.value = allAvailable[0] || 'title'
+  }
 }
 
 const fetchLabels = async () => {
@@ -98,6 +110,11 @@ onMounted(() => {
 const startQuiz = async () => {
   if (selectedLabels.value.length === 0 && !includeUnlabeled.value) {
     alert('Please select at least one label or include unlabeled cards')
+    return
+  }
+  
+  if (selectedQuestionTypes.value.length === 0) {
+    alert('Please select at least one question type')
     return
   }
 
@@ -295,6 +312,7 @@ const restartQuiz = () => {
   isUntimed.value = false
   quizMode.value = 'one-per-card'
   questionCount.value = 10
+  selectedQuestionTypes.value = Object.keys(questionTypes) as QuestionType[]
   cards.value = []
   allCards.value = []
   usedCardIndices.value = []
@@ -355,6 +373,23 @@ watch(() => quizStarted.value, (newVal) => {
               Untimed mode (no timer)
             </label>
           </div>
+          
+          <div class="question-types-section">
+            <h3>Question Types (defaults to title question if none are available)</h3>
+            <div class="question-types-grid">
+              <div v-for="questionType in allQuestionTypes" :key="questionType" class="checkbox-field">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    :value="questionType"
+                    v-model="selectedQuestionTypes"
+                  />
+                  {{ questionTypes[questionType].name }}
+                </label>
+              </div>
+            </div>
+          </div>
+          
           <div class="quiz-mode-section">
             <h3>Quiz Mode</h3>
             <div class="radio-field">
@@ -563,6 +598,22 @@ h1 {
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 0.95rem;
+}
+
+.question-types-section {
+  margin-top: 1.5rem;
+}
+
+.question-types-section h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.question-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
 }
 
 .start-button {
