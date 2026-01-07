@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   correct: []
-  wrong: []
+  wrong: [answer: string]
 }>()
 
 const userAnswer = ref('')
@@ -23,7 +23,7 @@ const checkAnswer = () => {
   if (correct) {
     emit('correct')
   } else {
-    emit('wrong')
+    emit('wrong', userAnswer.value.trim())
   }
 }
 </script>

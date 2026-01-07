@@ -1,20 +1,53 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import Chip from 'primevue/chip'
+import { computed } from 'vue'
 import type { Card } from '../../config/types'
 
-defineProps<{
+const props = defineProps<{
   card: Card
+  userAnswer?: string | string[]
 }>()
 
 const emit = defineEmits<{
   continue: []
 }>()
+
+const hasUserAnswer = computed(() => {
+  if (!props.userAnswer) return false
+  if (Array.isArray(props.userAnswer)) {
+    return props.userAnswer.length > 0
+  }
+  return props.userAnswer.trim() !== ''
+})
+
+const userAnswerDisplay = computed(() => {
+  if (!props.userAnswer) return ''
+  if (Array.isArray(props.userAnswer)) {
+    return props.userAnswer
+  }
+  return props.userAnswer
+})
 </script>
 
 <template>
   <div class="answer-section">
     <h3 class="wrong-header">❌ Incorrect!</h3>
+    
+    <div v-if="hasUserAnswer" class="user-answer">
+      <p class="answer-label">Your answer:</p>
+      <div v-if="Array.isArray(userAnswerDisplay)" class="user-keywords">
+        <Chip 
+          v-for="(keyword, index) in userAnswerDisplay" 
+          :key="index" 
+          :label="keyword"
+          class="user-keyword-chip"
+        />
+        <span v-if="userAnswerDisplay.length === 0" class="no-answer">(no keywords guessed)</span>
+      </div>
+      <h2 v-else class="user-answer-title">{{ userAnswerDisplay }}</h2>
+    </div>
+    
     <div class="correct-answer">
       <p class="answer-label">The correct answer is:</p>
       <h2 class="answer-title">{{ card.title }}</h2>
@@ -120,5 +153,37 @@ const emit = defineEmits<{
   display: flex;
   gap: 1rem;
   justify-content: center;
+}
+
+.user-answer {
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.user-answer-title {
+  font-size: 1.5rem;
+  color: #EF4444;
+  margin: 0;
+}
+
+.user-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.user-keyword-chip {
+  font-size: 0.7rem !important;
+  padding: 0.25rem 0.5rem !important;
+  height: auto !important;
+  background: rgba(239, 68, 68, 0.2) !important;
+  border: 2px solid #EF4444 !important;
+  color: #EF4444 !important;
+}
+
+.no-answer {
+  color: var(--text-color-secondary);
+  font-style: italic;
 }
 </style>

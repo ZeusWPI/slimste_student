@@ -12,16 +12,21 @@ const props = defineProps<{
   totalQuestions: number
   showLabels: boolean
   showAnswer: boolean
+  userAnswer?: string | string[]
 }>()
 
 const emit = defineEmits<{
   correct: []
-  wrong: []
+  wrong: [answer?: string | string[]]
   continue: []
 }>()
 
 const currentQuestionConfig = computed(() => questionTypes[props.questionType])
 const CurrentQuestionComponent = computed(() => currentQuestionConfig.value.component)
+
+const handleWrong = (answer?: string | string[]) => {
+  emit('wrong', answer)
+}
 </script>
 
 <template>
@@ -35,12 +40,13 @@ const CurrentQuestionComponent = computed(() => currentQuestionConfig.value.comp
       :total-questions="totalQuestions"
       :show-labels="showLabels"
       @correct="emit('correct')"
-      @wrong="emit('wrong')"
+      @wrong="handleWrong"
     />
     
     <AnswerReveal
       v-else
       :card="card"
+      :user-answer="userAnswer"
       @continue="emit('continue')"
     />
   </div>

@@ -32,6 +32,7 @@ const correctAnswers = ref(0)
 const wrongAnswers = ref(0)
 const finalTime = ref(0)
 let timerInterval: number | null = null
+const userAnswer = ref<string | string[] | undefined>(undefined)
 
 const currentQuestionType = ref<QuestionType>('title')
 
@@ -73,6 +74,7 @@ const generateQuestion = () => {
   if (!currentCard.value) return
   
   showAnswer.value = false
+  userAnswer.value = undefined
   
   // Use the helper function from QuestionHandler to select a random question type
   currentQuestionType.value = selectRandomQuestionType(currentCard.value)
@@ -247,7 +249,8 @@ const handleCorrect = () => {
   }
 }
 
-const handleWrong = () => {
+const handleWrong = (answer?: string | string[]) => {
+  userAnswer.value = answer
   showAnswer.value = true
 }
 
@@ -420,6 +423,7 @@ watch(() => quizStarted.value, (newVal) => {
             :total-questions="totalQuestions"
             :show-labels="showLabelsInQuiz"
             :show-answer="showAnswer"
+            :user-answer="userAnswer"
             @correct="handleCorrect"
             @wrong="handleWrong"
             @continue="continueAfterWrong"
