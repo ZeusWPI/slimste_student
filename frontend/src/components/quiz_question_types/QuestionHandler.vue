@@ -17,15 +17,15 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   correct: []
-  wrong: [answer?: string | string[]]
+  wrong: [answer?: string | string[], correctAnswer?: string | string[]]
   continue: []
 }>()
 
 const currentQuestionConfig = computed(() => questionTypes[props.questionType])
 const CurrentQuestionComponent = computed(() => currentQuestionConfig.value.component)
 
-const handleWrong = (answer?: string | string[]) => {
-  emit('wrong', answer)
+const handleWrong = (answer?: string | string[], correctAnswer?: string | string[]) => {
+  emit('wrong', answer, correctAnswer)
 }
 </script>
 

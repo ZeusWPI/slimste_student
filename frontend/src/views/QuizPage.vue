@@ -6,6 +6,7 @@ import Button from 'primevue/button'
 import Chip from 'primevue/chip'
 import LabelSelector from '../components/LabelSelector.vue'
 import QuestionHandler from '../components/quiz_question_types/QuestionHandler.vue'
+import WrongAnswerDisplay from '../components/quiz_question_types/WrongAnswerDisplay.vue'
 import { selectRandomQuestionType, type QuestionType, questionTypes, getAvailableQuestionTypes } from '../components/quiz_question_types/questionTypesConfig'
 import type { Label, Card as CardData } from '../config/types'
 
@@ -37,6 +38,15 @@ let timerInterval: number | null = null
 const userAnswer = ref<string | string[] | undefined>(undefined)
 
 const currentQuestionType = ref<QuestionType>('title')
+
+// Track wrong answers for summary
+interface WrongAnswer {
+  card: CardData
+  questionType: QuestionType
+  userAnswer?: string | string[]
+  correctAnswer?: string | string[]
+}
+const wrongAnswersList = ref<WrongAnswer[]>([])
 
 const currentCard = computed(() => cards.value[currentCardIndex.value])
 const progress = computed(() => {
@@ -142,6 +152,7 @@ const startQuiz = async () => {
       // Reset state
       correctAnswers.value = 0
       wrongAnswers.value = 0
+      wrongAnswersList.value = []
       quizEnded.value = false
       finalTime.value = 0
       showAnswer.value = false
@@ -266,9 +277,19 @@ const handleCorrect = () => {
   }
 }
 
-const handleWrong = (answer?: string | string[]) => {
+const handleWrong = (answer?: string | string[], correctAnswer?: string | string[]) => {
   userAnswer.value = answer
   showAnswer.value = true
+  
+  // Record the wrong answer
+  if (currentCard.value) {
+    wrongAnswersList.value.push({
+      card: currentCard.value,
+      questionType: currentQuestionType.value,
+      userAnswer: answer,
+      correctAnswer: correctAnswer
+    })
+  }
 }
 
 const continueAfterWrong = () => {
@@ -322,7 +343,61 @@ const restartQuiz = () => {
   timeRemaining.value = 60
   correctAnswers.value = 0
   wrongAnswers.value = 0
+  wrongAnswersList.value = []
   finalTime.value = 0
+}
+
+const redoQuizWithSameSettings = () => {
+  // Reset quiz state but keep all settings
+  quizEnded.value = false
+  quizStarted.value = false
+  showAnswer.value = false
+  cards.value = []
+  allCards.value = []
+  usedCardIndices.value = []
+  currentCardIndex.value = 0
+  totalQuestions.value = 0
+  currentQuestionNumber.value = 0
+  timeRemaining.value = 60
+  correctAnswers.value = 0
+  wrongAnswers.value = 0
+  wrongAnswersList.value = []
+  finalTime.value = 0
+  
+  // Start quiz again with existing settings
+  startQuiz()
+}
+
+const redoQuizWithWrongAnswers = () => {
+  if (wrongAnswersList.value.length === 0) return
+  
+  // Extract cards from wrong answers
+  const wrongCards = wrongAnswersList.value.map(wa => wa.card)
+  
+  // Reset quiz state
+  quizEnded.value = false
+  showAnswer.value = false
+  usedCardIndices.value = []
+  correctAnswers.value = 0
+  wrongAnswers.value = 0
+  wrongAnswersList.value = []
+  finalTime.value = 0
+  timeRemaining.value = 60
+  
+  // Set up quiz with wrong answer cards
+  cards.value = [...wrongCards]
+  cards.value.sort(() => Math.random() - 0.5)
+  currentCardIndex.value = 0
+  totalQuestions.value = cards.value.length
+  currentQuestionNumber.value = 1
+  
+  quizStarted.value = true
+  
+  generateQuestion()
+  
+  if (!isUntimed.value) {
+    startTimer()
+  }
 }
 
 const goBack = () => {
@@ -494,9 +569,31 @@ watch(() => quizStarted.value, (newVal) => {
               <p>Time Remaining</p>
             </div>
           </div>
+          
           <div class="result-actions">
-            <Button label="Try Again" icon="pi pi-refresh" @click="restartQuiz" />
+            <Button label="Redo Quiz" icon="pi pi-replay" @click="redoQuizWithSameSettings" />
+            <Button 
+              v-if="wrongAnswersList.length > 0"
+              label="Practice Wrong Answers" 
+              icon="pi pi-exclamation-circle" 
+              @click="redoQuizWithWrongAnswers" 
+              severity="warning" 
+            />
+            <Button label="New Quiz" icon="pi pi-sliders-h" @click="restartQuiz" severity="secondary" />
             <Button label="Back to Home" icon="pi pi-home" @click="goBack" severity="secondary" />
+          </div>
+          
+          <!-- Wrong Answers Summary -->
+          <div v-if="wrongAnswersList.length > 0" class="wrong-answers-summary">
+            <h3><i class="pi pi-exclamation-triangle"></i> Questions You Got Wrong</h3>
+            <WrongAnswerDisplay
+              v-for="(wrongAnswer, index) in wrongAnswersList"
+              :key="index"
+              :card="wrongAnswer.card"
+              :question-type="wrongAnswer.questionType"
+              :user-answer="wrongAnswer.userAnswer"
+              :correct-answer="wrongAnswer.correctAnswer"
+            />
           </div>
         </template>
       </Card>
@@ -721,5 +818,21 @@ h1 {
   display: flex;
   gap: 1rem;
   justify-content: center;
+}
+
+.wrong-answers-summary {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: #FEF2F2;
+  border: 2px solid #FEE2E2;
+  border-radius: 8px;
+}
+
+.wrong-answers-summary h3 {
+  margin: 0 0 1.5rem 0;
+  color: #DC2626;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 </style>

@@ -5,24 +5,28 @@ import type { Card } from '../../config/types'
 export const questionTypes = {
   title: {
     component: defineAsyncComponent(() => import('./TitleQuestion.vue')),
+    wrongAnswerComponent: defineAsyncComponent(() => import('./wrong_answer_displays/TitleWrongAnswer.vue')),
     name: 'Title Question',
     requiresAllCards: false,
     isAvailable: () => true, // Always available
   },
   keyword: {
     component: defineAsyncComponent(() => import('./KeywordQuestion.vue')),
+    wrongAnswerComponent: defineAsyncComponent(() => import('./wrong_answer_displays/KeywordWrongAnswer.vue')),
     name: 'Keyword Question',
     requiresAllCards: true,
     isAvailable: (card: Card) => card.keywords && card.keywords.length > 0,
   },
   quick_fact: {
     component: defineAsyncComponent(() => import('./QuickFactQuestion.vue')),
+    wrongAnswerComponent: defineAsyncComponent(() => import('./wrong_answer_displays/QuickFactWrongAnswer.vue')),
     name: 'Quick Fact Question',
     requiresAllCards: true,
     isAvailable: (card: Card) => card.quick_facts && card.quick_facts.length > 0,
   },
   list_keywords: {
     component: defineAsyncComponent(() => import('./ListKeywordsQuestion.vue')),
+    wrongAnswerComponent: defineAsyncComponent(() => import('./wrong_answer_displays/ListKeywordsWrongAnswer.vue')),
     name: 'List Keywords Question',
     requiresAllCards: false,
     isAvailable: (card: Card) => card.keywords && card.keywords.length > 0,

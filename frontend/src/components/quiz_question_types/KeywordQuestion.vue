@@ -13,17 +13,20 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   correct: []
-  wrong: []
+  wrong: [answer?: string, correctAnswer?: string[]]
 }>()
 
 const selectedOption = ref<string | null>(null)
 const options = ref<string[]>([])
+const correctKeywordsInQuestion = ref<string[]>([])
 
 const generateOptions = () => {
   if (!props.card.keywords) return
   
   // Mix correct keywords with wrong ones from other cards
   const correctKeywords = [...props.card.keywords]
+  // Store which correct keywords are in this question
+  correctKeywordsInQuestion.value = correctKeywords.slice(0, 2)
   const wrongKeywords: string[] = []
   
   // Collect keywords from other cards, excluding ones that are also on current card
@@ -38,7 +41,7 @@ const generateOptions = () => {
   // Shuffle and select wrong options
   const shuffledWrong = wrongKeywords.sort(() => Math.random() - 0.5)
   const numWrong = Math.min(3, shuffledWrong.length)
-  const generatedOptions = [...correctKeywords.slice(0, 2), ...shuffledWrong.slice(0, numWrong)]
+  const generatedOptions = [...correctKeywordsInQuestion.value, ...shuffledWrong.slice(0, numWrong)]
   
   options.value = generatedOptions.sort(() => Math.random() - 0.5)
 }
@@ -58,7 +61,7 @@ const checkAnswer = (option: string) => {
   if (isCorrect) {
     emit('correct')
   } else {
-    emit('wrong')
+    emit('wrong', option, correctKeywordsInQuestion.value)
   }
 }
 </script>

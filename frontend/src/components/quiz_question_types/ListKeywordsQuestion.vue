@@ -14,7 +14,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   correct: []
-  wrong: [answer: string[]]
+  wrong: [answer: string[], correctAnswer: string[]]
 }>()
 
 const userInput = ref('')
@@ -61,7 +61,8 @@ const handleKeyPress = (event: KeyboardEvent) => {
 const passQuestion = () => {
   // Convert revealed keywords set to array
   const guessedKeywords = Array.from(revealedKeywords.value)
-  emit('wrong', guessedKeywords)
+  const correctKeywords = props.card.keywords || []
+  emit('wrong', guessedKeywords, correctKeywords)
 }
 
 const isRevealed = (keyword: string) => {

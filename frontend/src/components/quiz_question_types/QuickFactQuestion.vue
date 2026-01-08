@@ -13,17 +13,21 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   correct: []
-  wrong: []
+  wrong: [answer?: string, correctAnswer?: string]
 }>()
 
 const selectedOption = ref<string | null>(null)
 const options = ref<string[]>([])
+const correctFact = ref<string>('')
 
 const generateOptions = () => {
   if (!props.card.quick_facts) return
   
   // Select one correct fact and mix with wrong facts from other cards
-  const correctFact = props.card.quick_facts[Math.floor(Math.random() * props.card.quick_facts.length)]
+  const selectedFact = props.card.quick_facts[Math.floor(Math.random() * props.card.quick_facts.length)]
+  if (selectedFact) {
+    correctFact.value = selectedFact
+  }
   const wrongFacts: string[] = []
   
   // Collect facts from other cards, excluding ones that are also on current card
@@ -37,7 +41,7 @@ const generateOptions = () => {
   
   const shuffledWrong = wrongFacts.sort(() => Math.random() - 0.5)
   const numWrong = Math.min(3, shuffledWrong.length)
-  const generatedOptions = [correctFact, ...shuffledWrong.slice(0, numWrong)].filter((fact): fact is string => fact !== undefined)
+  const generatedOptions = [correctFact.value, ...shuffledWrong.slice(0, numWrong)].filter((fact): fact is string => fact !== undefined)
   
   options.value = generatedOptions.sort(() => Math.random() - 0.5)
 }
@@ -57,7 +61,7 @@ const checkAnswer = (option: string) => {
   if (isCorrect) {
     emit('correct')
   } else {
-    emit('wrong')
+    emit('wrong', option, correctFact.value)
   }
 }
 </script>
