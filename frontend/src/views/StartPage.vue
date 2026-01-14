@@ -19,6 +19,10 @@ const goToQuizHistory = () => {
   router.push('/quiz/history')
 }
 
+const goToFlashcards = () => {
+  router.push('/flashcards')
+}
+
 const handleLogout = async () => {
   await logout()
   router.push('/login')
@@ -56,6 +60,16 @@ const handleLogout = async () => {
             <Button label="Start Quiz" icon="pi pi-play" @click="goToQuiz" />
             <Button label="View History" icon="pi pi-history" outlined @click="goToQuizHistory" />
           </div>
+        </template>
+      </Card>
+
+      <Card class="welcome-card">
+        <template #title>Flashcards</template>
+        <template #content>
+          <p>Study at your own pace with interactive flashcards. Flip cards to see quick facts.</p>
+        </template>
+        <template #footer>
+          <Button label="Start Flashcards" icon="pi pi-book" @click="goToFlashcards" />
         </template>
       </Card>
     </div>

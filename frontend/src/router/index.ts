@@ -8,6 +8,7 @@ import LabelsList from '../views/LabelsList.vue'
 import ShareLabels from '../views/ShareLabels.vue'
 import QuizPage from '../views/QuizPage.vue'
 import QuizHistory from '../views/QuizHistory.vue'
+import FlashcardsPage from '../views/FlashcardsPage.vue'
 import LoginPage from '../views/LoginPage.vue'
 import { useAuth } from '../composables/useAuth'
 
@@ -66,6 +67,12 @@ const router = createRouter({
       path: '/quiz',
       name: 'quiz',
       component: QuizPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/flashcards',
+      name: 'flashcards',
+      component: FlashcardsPage,
       meta: { requiresAuth: true }
     },
     {
